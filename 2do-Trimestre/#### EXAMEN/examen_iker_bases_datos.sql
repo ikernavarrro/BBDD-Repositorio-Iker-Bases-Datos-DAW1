@@ -1,0 +1,119 @@
+-- Examen Iker Navarro Pérez | 09-02-2026
+
+--------------------------- 1 -----------------------------
+-- 1.1
+CREATE TABLE ALBUM (
+albumId NUMBER(5) CONSTRAINT PK_ALBUM PRIMARY KEY,
+title VARCHAR2(80) CONSTRAINT NN_title NOT NULL,
+artistId NUMBER(5) CONSTRAINT NN_artistId NOT NULL CONSTRAINT CK_artistId CHECK (artistId BETWEEN 1 AND 80)
+);
+SELECT * FROM user_constraints WHERE LOWER(table_name) = 'album';
+
+CREATE TABLE GENRE (
+genreId NUMBER(3) CONSTRAINT PK_GENRE PRIMARY KEY,
+name VARCHAR2(25) CONSTRAINT NN_name NOT NULL CONSTRAINT U_name UNIQUE
+);
+SELECT * FROM user_constraints WHERE LOWER(table_name) = 'genre';
+
+CREATE TABLE TRACK (
+trackId NUMBER(3) CONSTRAINT PK_TRACK PRIMARY KEY,
+name VARCHAR2(150) CONSTRAINT NN_name_TRACK NOT NULL CONSTRAINT U_name_TRACK UNIQUE,
+albumId NUMBER(5) CONSTRAINT FK_TRACK_ALBUM REFERENCES ALBUM(albumId) ON DELETE CASCADE,
+genreId NUMBER(3),
+composer VARCHAR2(100),
+milliseconds NUMBER(4),
+bytes NUMBER(10),
+CONSTRAINT FK_TRACK_GENRE FOREIGN KEY (genreId) REFERENCES GENRE(genreId) ON DELETE SET NULL
+);
+SELECT * FROM user_constraints WHERE LOWER(table_name) = 'track';
+
+-- 1.2
+ALTER TABLE GENRE RENAME TO GENEROS;
+ALTER TABLE TRACK RENAME TO CANCIONES;
+
+-- 1.3
+ALTER TABLE GENEROS ADD (descripcion VARCHAR2(150), ritmoTempo VARCHAR2(6) CONSTRAINT CK_ritmoTempo CHECK (ritmoTempo IN ('lento','medio','rapido')));
+
+-- 1.4
+ALTER TABLE CANCIONES RENAME COLUMN milliseconds TO seconds;
+
+-- 1.5
+ALTER TABLE CANCIONES MODIFY (seconds NUMBER(4,3));
+
+-- 1.6
+ALTER TABLE CANCIONES DROP COLUMN seconds;
+
+-- 1.7
+ALTER TABLE CANCIONES DROP CONSTRAINT PK_TRACK;
+
+-- 1.8
+ALTER TABLE CANCIONES ADD CONSTRAINT PK_CANCIONES PRIMARY KEY (name, albumId);
+
+--------------------------- 2 -----------------------------
+-- 2.1
+SELECT * FROM PRODUCTOS;
+SELECT p.idFabricante, p.idProducto, p.descripcion, p.punitario,SUM((p.punitario * p.stock) * 1.18) AS "PRECIO TOTAL" 
+FROM PRODUCTOS p 
+WHERE stock < 100 
+GROUP BY p.idFabricante, p.idProducto, p.descripcion, p.punitario
+ORDER BY p.punitario DESC, p.descripcion ASC; 
+
+-- 2.2A
+SELECT * FROM PEDIDOS;
+SELECT pe.idcliente, COUNT(pe.idcliente) AS "NÚMERO DE PEDIDOS REALIZADOS", MIN(pe.fpedido) AS "FECHA PEDIDO MÁS ANTIGUO", MAX(pe.fpedido) AS "FECHA PEDIDO MÁS RECIENTE"
+FROM PEDIDOS pe
+GROUP BY pe.idcliente;
+
+-- 2.2B
+SELECT * FROM PEDIDOS;
+SELECT pe.idcliente, COUNT(pe.idcliente) AS "NÚMERO DE PEDIDOS REALIZADOS", MIN(pe.fpedido) AS "FECHA PEDIDO MÁS ANTIGUO", MAX(pe.fpedido) AS "FECHA PEDIDO MÁS RECIENTE"
+FROM PEDIDOS pe
+GROUP BY pe.idcliente
+HAVING COUNT(pe.idcliente) > 3 AND EXTRACT(YEAR FROM MIN(pe.fpedido)) > 2000;
+
+-- 2.3
+SELECT * FROM OFICINAS;
+SELECT ciudad AS "CIUDAD", region AS "region", director, ventas AS "VENTAS €"
+FROM OFICINAS
+WHERE UPPER(ciudad) IN ('MADRID','VALENCIA')
+ORDER BY ciudad, ventas DESC;
+
+-- 2.4
+SELECT * FROM PEDIDOS;
+SELECT numpedido, idvendedor, fpedido
+FROM PEDIDOS
+WHERE EXTRACT(YEAR FROM fpedido) = 1999 AND EXTRACT(MONTH FROM fpedido) = 5;
+
+-- 2.5
+SELECT * FROM EMPLEADOS;
+SELECT idEmpleado || '-' || nombre AS "AliasEmpleado", puesto, fcontrato, ventas
+FROM EMPLEADOS
+WHERE LOWER(puesto) LIKE '%director%' AND ventas BETWEEN 300000 AND 400000;
+
+-- 2.6
+SELECT * FROM OFICINAS;
+SELECT * FROM EMPLEADOS;
+SELECT director, COUNT(director) AS "OFICINAS QUE DIRIGE"
+FROM OFICINAS
+GROUP BY director;
+
+-- 2.7
+SELECT * FROM PRODUCTOS;
+SELECT COUNT(*) AS "MANTELES VERDES"
+FROM PRODUCTOS
+WHERE LOWER(descripcion) LIKE '%mantel% %verde%';
+
+-- 2.8A
+SELECT * FROM EMPLEADOS;
+SELECT EXTRACT(YEAR FROM fcontrato) AS "AÑO", COUNT(*) AS "EMPLEADOS CONTRATADOS"
+FROM EMPLEADOS
+GROUP BY EXTRACT(YEAR FROM fcontrato)
+ORDER BY 1 DESC;
+
+-- 2.8B
+SELECT * FROM EMPLEADOS;
+SELECT EXTRACT(YEAR FROM fcontrato) AS "AÑO", COUNT(*) AS "EMPLEADOS CONTRATADOS"
+FROM EMPLEADOS
+WHERE idoficina IS NULL
+GROUP BY EXTRACT(YEAR FROM fcontrato)
+ORDER BY 1 DESC;

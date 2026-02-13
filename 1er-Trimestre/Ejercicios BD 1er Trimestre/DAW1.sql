@@ -1,0 +1,33 @@
+CREATE TABLE Personas(
+IDPersona NUMBER(4)PRIMARY KEY,
+Nombre VARCHAR2(30),
+Titulacion VARCHAR2(15),
+FechaNacimiento DATE
+);
+
+CREATE TABLE Departamentos(
+IDDepartamento NUMBER (2) PRIMARY KEY,
+Nombre VARCHAR2 (15),
+JefeDepartamento NUMBER(4)REFERENCES Personas(IDPersona),
+Planta NUMBER(2)
+);
+
+SELECT * FROM PERSONAS;
+SELECT * FROM DEPARTAMENTOS;
+
+INSERT INTO PERSONAS VALUES (1, 'Iñigo Chueca', 'Informatica', '10-10-1966');
+INSERT INTO PERSONAS VALUES (2, 'Marta Torre', 'Informatica', '10-10-1971');
+INSERT INTO PERSONAS VALUES (3, 'Inez Wochiposka', 'Informatica', '28-07-2006');
+INSERT INTO PERSONAS VALUES (4, 'Iker Navarro', 'Informatica', null);
+INSERT INTO PERSONAS VALUES (null, 'Maxwell Smart', 'Informatica', '29-05-2007');
+
+INSERT INTO DEPARTAMENTOS VALUES (1, 'Sistemas', 1, 4);
+INSERT INTO DEPARTAMENTOS VALUES (2, 'Finanzas', 3, 3);
+INSERT INTO DEPARTAMENTOS VALUES (3, 'Desarrollo', 1, 4);
+INSERT INTO DEPARTAMENTOS VALUES (4, 'Laboratorios', null, 4);
+
+UPDATE DEPARTAMENTOS SET PLANTA = 2 WHERE IDDepartamento = 3;
+UPDATE DEPARTAMENTOS SET NOMBRE = 'Aplicaciones' WHERE LOWER(nombre) = 'desarrollo';
+UPDATE DEPARTAMENTOS SET NOMBRE = 'Aplicaciones' WHERE UPPER(nombre) = 'DESARROLLO';
+
+DELETE FROM DEPARTAMENTOS WHERE LOWER(nombre)= 'sistemas';

@@ -72,12 +72,21 @@ FROM productos p
 WHERE EXISTS(
     SELECT *
     FROM lineas_pedidos lp
+<<<<<<< HEAD
     WHERE lp.fabricante=p.idfabricante AND lp.producto=p.idproducto
     GROUP BY lp.codigo
     HAVING SUM(lp.punitario*lp.cantidad) >= 25000);
     
 ---------------------------------------------------------------------- PREGUNTAR -----------------------------------
 -- PORQUE NO ME DA LOS MISMOS RESULTADOS?¿    
+=======
+    WHERE lp.fabricante=p.idfabricante AND lp.producto=p.idproducto AND codigo IN(
+        SELECT codigo
+        FROM lineas_pedidos 
+        GROUP BY codigo
+        HAVING SUM(punitario*cantidad) >= 25000));
+     
+>>>>>>> 605699aca20a8a133ac07069a873be5e887eb755
 
 SELECT p.idfabricante, p.idproducto, p.descripcion
 FROM productos p JOIN lineas_pedidos lp ON lp.fabricante=p.idfabricante AND lp.producto=p.idproducto
@@ -95,14 +104,23 @@ FROM clientes
 WHERE representante IN(
     SELECT idempleado
     FROM empleados
+<<<<<<< HEAD
     WHERE LOWER(nombre) LIKE ('bego a se%') AND idempleado IN(
         SELECT idvendedor
+=======
+    WHERE LOWER(nombre) = ('bego a se or se or')) AND idcliente IN(
+        SELECT idcliente
+>>>>>>> 605699aca20a8a133ac07069a873be5e887eb755
         FROM pedidos
         WHERE codigo IN (
             SELECT codigo
             FROM lineas_pedidos
             GROUP BY codigo
+<<<<<<< HEAD
             HAVING SUM(punitario*cantidad) > 3000)));
+=======
+            HAVING SUM(punitario*cantidad) > 3000));
+>>>>>>> 605699aca20a8a133ac07069a873be5e887eb755
 ---------------------------------------------------------------------- EXPLICACIÓN -----------------------------------
 -- �Y los que no han remitido un pedido superior a 3000�?
 SELECT *
@@ -110,14 +128,22 @@ FROM clientes
 WHERE representante IN(
     SELECT idempleado
     FROM empleados
+<<<<<<< HEAD
     WHERE LOWER(nombre) LIKE ('bego%a%se%') AND idempleado NOT IN(
+=======
+    WHERE LOWER(nombre) LIKE ('bego%a%se%')) AND idcliente NOT IN(
+>>>>>>> 605699aca20a8a133ac07069a873be5e887eb755
         SELECT idvendedor
         FROM pedidos
         WHERE codigo IN (
             SELECT codigo
             FROM lineas_pedidos
             GROUP BY codigo
+<<<<<<< HEAD
             HAVING SUM(punitario*cantidad) > 3000)));
+=======
+            HAVING SUM(punitario*cantidad) > 3000));
+>>>>>>> 605699aca20a8a133ac07069a873be5e887eb755
 
 /*6.- Listar las oficinas en donde haya un vendedor cuyas ventas representen m�s del 55% del objetivo de su oficina.*/
 SELECT * FROM OFICINAS;
@@ -125,10 +151,17 @@ SELECT * FROM EMPLEADOS;
 
 SELECT *
 FROM oficinas o
+<<<<<<< HEAD
 WHERE EXISTS(
     SELECT *
     FROM empleados e
     WHERE o.idoficina=e.idoficina AND LOWER(e.puesto) LIKE ('comercial%') AND e.ventas > (o.objetivo*0.55));
+=======
+WHERE objetivo* 0.55 < ANY (
+    SELECT ventas
+    FROM empleados e
+    WHERE o.idoficina=e.idoficina);
+>>>>>>> 605699aca20a8a133ac07069a873be5e887eb755
 
 ---------------------------------------------------------------------- PREGUNTAR -----------------------------------
 -- PORQUE NO ME DA LOS MISMOS RESULTADOS?¿   
@@ -143,10 +176,17 @@ SELECT * FROM EMPLEADOS;
 
 SELECT *
 FROM oficinas o
+<<<<<<< HEAD
 WHERE NOT EXISTS(
     SELECT *
     FROM empleados e
     WHERE o.idoficina=e.idoficina AND LOWER(e.puesto) LIKE ('comercial%') AND e.ventas <= (o.objetivo*0.50));
+=======
+WHERE objetivo* 0.55 < (
+    SELECT MIN(ventas)
+    FROM empleados e
+    WHERE o.idoficina=e.idoficina);
+>>>>>>> 605699aca20a8a133ac07069a873be5e887eb755
 
 ---------------------------------------------------------------------- PREGUNTAR -----------------------------------
 --JOIN ¿?      

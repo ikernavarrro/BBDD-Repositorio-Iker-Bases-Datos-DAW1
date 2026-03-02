@@ -78,20 +78,83 @@ WHERE idcliente IN (
     SELECT idcliente
     FROM pedidos p
     WHERE EXTRACT(YEAR FROM fpedido) = 2007 AND codigo IN(
-        ));
+        SELECT codigo 
+        FROM lineas_pedidos lp
+        WHERE EXISTS(
+            SELECT *    
+            FROM productos pro
+            WHERE lp.fabricante=pro.idfabricante AND lp.producto=pro.idproducto AND LOWER(descripcion) LIKE ('%mantel%'))));
+            
+SELECT nombre
+FROM clientes c
+WHERE idcliente IN (
+    SELECT DISTINCT p.idcliente
+    FROM pedidos p JOIN lineas_pedidos lp ON p.codigo=lp.codigo JOIN productos pro ON lp.fabricante=pro.idfabricante AND lp.producto=pro.idproducto
+    WHERE EXTRACT(YEAR FROM p.fpedido) = 2007 AND LOWER(pro.descripcion) LIKE ('%mantel%'));      
     
-        SELECT *    
-        FROM productos pro
-        WHERE p.codigo = LOWER(descripcion) LIKE ('%mantel%')
-
-
 /*7.- Mostrar los nombres de los clientes (sin valores repetidos) que en el a�o 2007 han comprado un mantel del fabricante bra.*/
+SELECT * FROM CLIENTES;
+SELECT * FROM PRODUCTOS;
+SELECT * FROM PEDIDOS;
+SELECT * FROM LINEAS_PEDIDOS;
 
+SELECT DISTINCT nombre
+FROM clientes
+WHERE idcliente IN(
+    SELECT idcliente
+    FROM pedidos p
+    WHERE EXTRACT(YEAR FROM fpedido) = 2007 AND codigo IN(
+        SELECT codigo
+        FROM lineas_pedidos lp
+        WHERE EXISTS(
+            SELECT *
+            FROM productos pro
+            WHERE lp.fabricante=pro.idfabricante AND lp.producto=pro.idproducto AND LOWER(descripcion) LIKE '%mantel%' AND LOWER(idfabricante) = 'bra')));
+            
+SELECT DISTINCT nombre
+FROM clientes
+WHERE idcliente IN (
+    SELECT p.idcliente
+    FROM pedidos p JOIN lineas_pedidos lp ON p.codigo=lp.codigo JOIN productos pro ON lp.fabricante=pro.idfabricante AND lp.producto=pro.idproducto
+    WHERE EXTRACT(YEAR FROM p.fpedido) = 2007 AND LOWER(pro.descripcion) LIKE '%mantel%' AND LOWER(pro.idfabricante) = 'bra');            
 
 /*8.- Mostrar el nombre de los empleados que fueron contratados antes de la fecha en que se realiz� el primer pedido.*/
+SELECT * FROM EMPLEADOS;
+SELECT * FROM PEDIDOS;
 
+SELECT nombre
+FROM empleados
+WHERE fcontrato < (
+    SELECT MIN(fpedido)
+    FROM pedidos);
 
 /*9.- Mostrar los nombres de los jefes que tengan m�s de 4 empleados a su cargo.*/
+SELECT * FROM EMPLEADOS;
 
+SELECT nombre
+FROM empleados
+WHERE idempleado IN ( 
+    SELECT jefe
+    FROM empleados
+    GROUP BY jefe
+    HAVING COUNT(*) > 4);
 
 /*10.-Mostrar los nombres de los jefes cuyas ventas sean menores que las de todos sus empleados.*/
+SELECT * FROM EMPLEADOS;
+    
+SELECT nombre
+FROM empleados
+WHERE idempleado IN (
+    SELECT e.jefe
+    FROM empleados e JOIN empleados j ON e.jefe = j.idempleado
+    GROUP BY e.jefe
+    HAVING MIN(e.ventas) > MAX(j.ventas));  
+    
+SELECT nombre
+FROM empleados
+WHERE idempleado IN (
+    SELECT e.jefe
+    FROM empleados e JOIN empleados j ON e.jefe = j.idempleado
+    GROUP BY e.jefe
+    HAVING SUM(e.ventas) > MAX(j.ventas));    
+

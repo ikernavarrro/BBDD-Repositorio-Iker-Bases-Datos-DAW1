@@ -109,14 +109,32 @@ WHERE fpedido=(
 /*11.- Por cada fabricante, mostrar cuantos productos tiene, el precio medio de sus productos (redondeados a 2 decimales),
 el precio m�s barato y el precio m�s caro. Los campos de precios deben aparecer con dos decimales y el s�mbolo del euro por detr�s.
 */
+SELECT * FROM PRODUCTOS;
+
+SELECT idfabricante AS "Fabricante", COUNT(*) AS "Total Productos", ROUND(AVG(punitario),2) || '€' AS "Precio Medio", MIN(punitario) || '€' AS "Precio Más Barato", MAX(punitario) || '€' AS "Precio Más Caro"
+FROM productos
+GROUP BY idfabricante;
+
 
 /*11B.- De la pregunta anterior solo mostrar aquellos fabricantes cuyo precio m�s alto sea m�s del doble de la media del precio
 de sus productos.*/
+SELECT idfabricante AS "Fabricante", COUNT(*) AS "Total Productos", ROUND(AVG(punitario),2) || '€' AS "Precio Medio", MIN(punitario) || '€' AS "Precio Más Barato", MAX(punitario) || '€' AS "Precio Más Caro"
+FROM productos
+GROUP BY idfabricante
+HAVING MAX(punitario)> (AVG(punitario)*2);
 
 /*12.- Listar la oficina que tenga un objetivo mayor de las que tienen director. 
 Se deben mostrar los campos de n�mero de oficina, nombre del director, objetivo y 
 un objetivo para el a�o que viene que ser� el objetivo incrementado en un 5%. 
 A este nuevo campo lo vamos a denominar Objetivo 2021. */
+SELECT * FROM OFICINAS;
+ 
+SELECT o.idoficina AS "Número Oficina", e.nombre AS "Nombre Director", o.objetivo "Objetivo Actual", o.objetivo*1.05 AS "Objetivo 2027"
+FROM oficinas o JOIN empleados e ON o.director = e.idempleado
+WHERE o.objetivo =(
+    SELECT MAX(objetivo)
+    FROM oficinas
+    WHERE director IS NOT NULL );
 
 /*13.- Mostrar por cada cliente su nombre, fecha de sus pedidos, y calcular la fecha en la que ha sido enviado, 
 calcul�ndose esta de la siguiente forma:
@@ -129,6 +147,12 @@ Si el pedido es superior a 30000 se env�a al d�a siguiente.
 Tanto la fecha del pedido como la fecha del env�o debe ser mostrada con el siguiente formato:
 d�a de mes de a�o (por ejemplo: 7 de marzo de 2012).
 */
+SELECT * FROM CLIENTES;
+SELECT * FROM PEDIDOS;
+SELECT * FROM LINEAS_PEDIDOS;
+
+SELECT c.nombre AS "Nombre Cliente", p.fpedido AS "Fecha Pedido", 
+FROM clientes;
 
 
 /*14.- Mostrar por cada producto (identificado por su fabricante y producto) su descripci�n, precio unitario y

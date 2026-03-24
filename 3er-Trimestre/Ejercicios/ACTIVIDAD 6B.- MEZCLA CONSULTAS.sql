@@ -143,6 +143,18 @@ Si est� entre 51 y 150 ser� para dentro de una semana (SEMANA)
 y si es superior a 150 ser� para dentro de un mes (MES). 
 Esta consulta debe mostrar el fabricante, descripci�n, 
 existencias y la petici�n del pedido mostrando URGENTE, SEMANA o MES. */
+SELECT * FROM PRODUCTOS;
+
+SELECT
+    idfabricante,
+    descripcion,
+    stock,
+    CASE
+        WHEN stock <= 50 THEN 'URGENTE'
+        WHEN stock BETWEEN 51 AND 150 THEN 'SEMANA'
+        WHEN stock > 150 THEN 'MES'
+    END AS "Próximo Pedido"    
+FROM productos;    
 
 
 /*9.- Mostrar el precio medio de los productos de cada fabricante que superen los 20 �.
@@ -165,8 +177,21 @@ Si las ventas son inferiores a 200000 el premio ser� de 100�.
 Si las ventas son inferiores a 300000 el premio ser� de 200�.
 Si las ventas son inferiores a 400000 el premio ser� de 300�.
 Si las ventas son superiores a 400000 el premio ser� de 500�.
-Tanto la fecha del pedido como la fecha del env�o debe ser mostrada 
-con el siguiente formato: d�a de mes de a�o (por ejemplo: 7-marzo-2012).*/
+*/
+SELECT * FROM EMPLEADOS;
+
+SELECT
+    nombre,
+    ventas,
+    CASE
+        WHEN ventas < 100000 THEN 'Sin Bonificación'
+        WHEN ventas < 200000 THEN '100€ de Bonificación'
+        WHEN ventas < 300000 THEN '200€ de Bonificación'
+        WHEN ventas < 400000 THEN '300€ de Bonificación'
+        WHEN ventas >= 400000 THEN '500€ de Bonificación'
+        ELSE 'Sin Bonificación'
+    END AS "Bonificación"
+FROM empleados;    
 
 /*11.- Mostrar de cada empleado su nombre, el nombre de su jefe solo de aquellos empleados
 que su jefe haya sido contratado posteriormente a ellos. 
@@ -229,3 +254,22 @@ a aquellas del norte se les incrementar� su objetivo en un 5%,
 a las del este en un 3% a las del oeste en un 2% y al resto en un 7%.
 Mostrar en el listado el n�mero de oficina, regi�n, porcentaje a incrementar,
 el objetivo actual y el objetivo actualizado con el incremento. */
+SELECT * FROM OFICINAS;
+
+SELECT 
+    idoficina,
+    region,
+    CASE LOWER(region)
+        WHEN 'norte' THEN '5%'
+        WHEN 'este' THEN '3%'
+        WHEN 'oeste' THEN '2%'
+        ELSE '7%'
+    END AS "Porcentaje de Incremento",
+    objetivo AS "Objetivo Actual",
+    CASE LOWER(region)
+        WHEN 'norte' THEN objetivo*1.05
+        WHEN 'este' THEN objetivo*1.03
+        WHEN 'oeste' THEN objetivo*1.02
+        ELSE objetivo*1.07
+    END AS "Objetivo Incrementado"
+FROM oficinas;

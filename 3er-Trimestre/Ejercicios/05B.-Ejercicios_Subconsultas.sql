@@ -136,6 +136,7 @@ FROM empleados
 WHERE idempleado IN ( 
     SELECT jefe
     FROM empleados
+    WHERE jefe IS NOT NULL
     GROUP BY jefe
     HAVING COUNT(*) > 4);
 

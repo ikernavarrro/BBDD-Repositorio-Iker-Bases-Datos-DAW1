@@ -151,8 +151,18 @@ SELECT * FROM CLIENTES;
 SELECT * FROM PEDIDOS;
 SELECT * FROM LINEAS_PEDIDOS;
 
-SELECT c.nombre AS "Nombre Cliente", p.fpedido AS "Fecha Pedido", 
-FROM clientes;
+SELECT
+    c.nombre AS "Nombre Cliente",
+    TO_CHAR(p.fpedido, 'FMdd "de" FMmonth "de" yyyy') AS "Fecha Pedido",
+    TO_CHAR(SUM(lp.punitario*lp.cantidad), '99G999D00L') AS "Importe Pedido",
+    CASE 
+    WHEN SUM(lp.punitario*lp.cantidad) < 5000 THEN TO_CHAR(p.fpedido+15, 'FMdd "de" FMmonth "de" yyyy')
+    WHEN SUM(lp.punitario*lp.cantidad) BETWEEN 5000 AND 15000 THEN TO_CHAR(p.fpedido+10, 'FMdd "de" FMmonth "de" yyyy')
+    WHEN SUM(lp.punitario*lp.cantidad) BETWEEN 15000 AND 30000 THEN TO_CHAR(p.fpedido+5, 'FMdd "de" FMmonth "de" yyyy')
+    WHEN SUM(lp.punitario*lp.cantidad) > 30000 THEN TO_CHAR(p.fpedido+1, 'FMdd "de" FMmonth "de" yyyy')
+    END AS "Fecha Envio"
+FROM clientes c JOIN pedidos p ON c.idcliente = p.idcliente JOIN lineas_pedidos lp ON p.codigo=lp.codigo
+GROUP BY c.nombre,p.fpedido;
 
 
 /*14.- Mostrar por cada producto (identificado por su fabricante y producto) su descripci�n, precio unitario y
@@ -160,6 +170,28 @@ mostrar un campo m�s denominado cantidad de ventas que muestre un texto depend
 que de ese producto ha sido vendido a los clientes en el a�o 2001, si es inferior a 10 mostraremos �poco vendido�,
 si est� entre 10 y 50 mostraremos �NOTABLE�, si es superior a 50 mostraremos �MUY VENDIDO�.
 */
+SELECT * FROM PRODUCTOS;
+SELECT * FROM PEDIDOS;
+SELECT * FROM LINEAS_PEDIDOS;
 
+SELECT 
+    pr.descripcion,
+    TO_CHAR(pr.punitario, '99G999D00L') AS "Precio Unitario",
+    SUM(cantidad) AS "Cantidad",
+    CASE
+        WHEN SUM(cantidad) < 10 THEN 'Poco Vendido'
+        WHEN SUM(cantidad) BETWEEN 10 AND 50 THEN 'Notable'
+        WHEN SUM(cantidad) > 50 THEN 'Muy Vendido'
+    END AS "Cantidad de Ventas"    
+FROM 
+    productos pr 
+    JOIN lineas_pedidos lp ON pr.idproducto=lp.producto AND pr.idfabricante=lp.fabricante 
+    JOIN pedidos p ON p.codigo=lp.codigo
+WHERE 
+    EXTRACT(YEAR FROM p.fpedido)=2001
+GROUP BY
+    pr.descripcion,
+    pr.punitario;        
+    
 
 

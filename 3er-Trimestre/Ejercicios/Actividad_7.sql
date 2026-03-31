@@ -492,24 +492,121 @@ WHERE
 
 --47. Indíquese si las siguientes sentencias son correctas, si no lo son, indique en qué
 --consiste el error:        
-SELECT * FROM EMP
+SELECT * 
+FROM EMP
 WHERE MGR = NULL;
+--No es correcta porque MGR es una clave foránea que hace referencia a la Tabla de Empleados(Relacuón Unaria)
+--haciendo referencia al jefe.
 
-SELECT * FROM DEPT
+SELECT * 
+FROM DEPT
 WHERE DEPTNO = 20 OR WHERE DEPTNO = 30;
+--No es correcta porque hay dos WHERE, tendría que ser así:
+SELECT * 
+FROM DEPT
+WHERE DEPTNO = 20 OR DEPTNO = 30;
 
-SELECT * FROM EMP
-WHERE NOT ENAME LIKE ‘R%’
+SELECT * 
+FROM EMP
+WHERE NOT ENAME LIKE 'R%'
 AND SAL BETWEEN 3000 AND 5000;
+-- Si es correcto, se refiere a que no hayan nombres que se parezcan a R% y el salario esté entre 3000 y 5000
 
-SELECT * FROM EMP
-WHERE SAL < 4000 AND JOB NOT = ’ANALYST’;
+SELECT * 
+FROM EMP
+WHERE SAL < 4000 AND JOB NOT = 'ANALYST';
+--No es correcto, no se puede utilizar el operador NOT para referirse a que se no sea igual, para eso está el != sería así:
+SELECT * 
+FROM EMP
+WHERE SAL < 4000 AND JOB != 'ANALYST';
 
 SELECT * FROM DEPT
-WHERE LOC = ‘DALLAS’ OR ‘CHICAGO’;    
+WHERE LOC = 'DALLAS' OR 'CHICAGO';
+--No es correcto, cuando se utiliza un operador OR hay que compararlo entero nuevamente es decir, sería algo así:
+SELECT * FROM DEPT
+WHERE LOC = 'DALLAS' OR LOC = 'CHICAGO';
     
+--48. Visualice el número de los departamentos que tengan más de tres empleados asignados.
+SELECT * FROM DEPT;
+SELECT * FROM EMP;
+
+SELECT 
+    deptno
+FROM dept
+WHERE deptno IN (
+    SELECT
+        deptno
+    FROM emp
+    GROUP BY
+        deptno
+    HAVING COUNT(*) > 3);  
     
+--49. El salario medio y mínimo de cada puesto, mostrando en el resultado aquellos cuyo
+--salario medio esté por encima de 1500.    
+SELECT * FROM EMP;
+
+SELECT
+    job,
+    ROUND(AVG(sal)),
+    MIN(sal)
+FROM emp
+GROUP BY job
+HAVING AVG(sal) > 1500
+ORDER BY job;        
+
+--50. ¿Qué empleados trabajan en ‘DALLAS’ ?
+SELECT * FROM EMP;
+SELECT * FROM DEPT;
+
+SELECT
+    *
+FROM emp
+WHERE deptno = (
+    SELECT 
+    deptno
+    FROM dept
+    WHERE LOWER(loc)='dallas')
+ORDER BY eno;
+
+--51. ¿Cuántos trabajan en ‘CHICAGO’ ?
+SELECT * FROM DEPT;
+SELECT * FROM EMP;
+
+SELECT
+    COUNT(*)
+FROM emp
+WHERE deptno =(
+    SELECT
+        deptno
+    FROM dept
+    WHERE LOWER(loc)='chicago');
     
+--52. Listar el nombre de los empleados que ganan menos que sus supervisores.
+SELECT * FROM EMP;
+
+SELECT
+    e.ename
+FROM emp e JOIN emp j ON e.mgr=j.eno
+WHERE e.sal<j.sal
+ORDER BY e.eno;
+
+--53. Listar el nombre, trabajo, departamento, localidad y salario de aquellos empleados que
+--tengan un salario mayor de 2000 y trabajen en ‘DALLAS’ o ‘NEW YORK’.
+SELECT * FROM EMP;
+
+SELECT 
+    e.ename,
+    e.job,
+    e.deptno,
+    d.loc,
+    e.sal
+FROM emp e JOIN dept d ON e.deptno=d.deptno
+WHERE 
+    e.sal>2000 
+    AND 
+    LOWER(d.loc) IN ('dallas','new york')
+ORDER BY e.eno;
+
 
 
 

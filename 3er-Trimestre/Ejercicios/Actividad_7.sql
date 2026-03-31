@@ -298,7 +298,217 @@ GROUP BY job
 HAVING AVG(sal) > 4000
 ORDER BY job;
 
+--31. Seleccionar los empleados cuyo salario sea superior al de ‘ADAMS’.
+SELECT * FROM EMP;
 
+SELECT
+    *
+FROM emp
+WHERE sal > (
+    SELECT
+        sal
+    FROM emp
+    WHERE LOWER(ename)='adams')
+ORDER BY eno;
+
+--32. Seleccionar el nombre y fecha de ingreso del empleado que lleva menos tiempo.
+SELECT * FROM EMP;
+
+SELECT
+    ename,
+    hiredate
+FROM emp
+WHERE hiredate = (
+    SELECT 
+        MIN(hiredate)
+    FROM emp);
+    
+--33. Seleccionar el nombre de los empleados que ganen más que todos los ‘SALESMAN’.
+SELECT * FROM EMP;
+
+SELECT
+    ename
+FROM emp
+WHERE sal > (
+    SELECT
+        MAX(sal)
+    FROM emp
+    WHERE LOWER(job)='salesman')
+ORDER BY eno;
+
+--34. Seleccionar los empleados que ganen más que alguno de los ‘SALESMAN’.
+SELECT * FROM EMP;
+
+SELECT 
+    *
+FROM emp
+WHERE sal > (
+    SELECT
+        MIN(sal)
+    FROM emp
+    WHERE LOWER(job)='salesman')
+ORDER BY eno;
+
+--35. Seleccionar el nombre de cada empleado, y el número y nombre de su jefe.
+SELECT * FROM EMP;
+SELECT * FROM SALGRADE;
+
+SELECT 
+    e.ename AS "Nombre Empleado",
+    j.eno,
+    j.ename AS "Nombre Jefe"
+FROM emp e JOIN emp j ON e.mgr=j.eno
+ORDEr BY e.ename;
+
+--36. Mostrar el trabajo, el nombre y el salario de los empleados ordenados por el tipo de
+--trabajo y por salario descendente.
+SELECT * FROM EMP;
+
+SELECT
+    job,
+    ename,
+    sal
+FROM emp
+ORDER BY job,sal DESC;
+
+--37. Mostrar el nombre del empleado y su fecha de alta en la empresa de los empleados que
+--son ‘ANALISTA’.
+SELECT * FROM EMP;
+
+SELECT 
+    ename,
+    hiredate
+FROM emp
+WHERE LOWER(job)='analyst';    
+    
+--38. Mostrar el nombre del empleado y una columna que contenga el salario multiplicado por
+--la comisión cuya cabecera sea ‘BONO’.    
+SELECT * FROM EMP;
+
+SELECT
+    ename,
+    sal*comm AS "BONO"
+FROM emp
+ORDER BY eno;    
+
+--39. Encontrar el salario medio de aquellos empleados cuyo trabajo sea el de ANALISTA.
+SELECT * FROM EMP;
+
+SELECT
+    AVG(sal) AS "Salario Medio"
+FROM emp
+WHERE LOWER(job)='analyst';
+
+--40. Encontrar el salario más alto, el más bajo y la diferencia entre ambos.
+SELECT * FROM EMP;
+
+SELECT 
+    MAX(sal) AS "Salario Más Alto",
+    MIN(sal) AS "Salario Más Bajo",
+    MAX(sal) - MIN(sal) AS "Diferencia"
+FROM emp;
+
+--41. Hallar el numero de trabajos distintos que existen en el departamento 30.
+SELECT * FROM EMP;
+
+SELECT 
+    COUNT(DISTINCT job)
+FROM emp
+WHERE deptno = 30;
+
+--42. Mostrar el nombre del empleado, su trabajo, el nombre y el código del departamento
+--en el que trabaja.
+SELECT * FROM EMP;
+SELECT * FROM DEPT;
+
+SELECT
+    e.ename,
+    e.job,
+    d.dname,
+    d.deptno
+FROM emp e JOIN dept d ON e.deptno=d.deptno
+ORDER BY e.eno;    
+
+--43. Mostrar el nombre, el trabajo y el salario de todos los empleados que tienen un salario
+--superior al salario más bajo del departamento 30.
+SELECT * FROM EMP;
+
+SELECT 
+    ename,
+    job,
+    sal
+FROM emp
+WHERE sal >(
+    SELECT 
+        MIN(sal)
+    FROM emp
+    WHERE deptno = 30)
+ORDER BY sal DESC;    
+
+--44. Encontrar a los empleados cuyo jefe es ‘BLAKE’.
+SELECT * FROM EMP;
+
+SELECT
+    *
+FROM emp
+WHERE mgr = (
+    SELECT 
+        eno
+    FROM emp
+    WHERE LOWER(ename)='blake');
+
+--45. Encontrar el no de trabajadores diferentes en el departamento 30 para aquellos
+--empleados cuyo salario pertenezca al intervalo [1000, 1800].  
+SELECT * FROM EMP;
+
+SELECT
+    COUNT(DISTINCT eno)
+FROM emp
+WHERE deptno = 30 AND sal BETWEEN 1000 AND 1800;
+
+--46. Encontrar el ename, dname, job y sal de los empleados que trabajen en el mismo
+--departamento que ‘TURNER’ y su salario sea mayor que la media del salario del
+--departamento 10.
+SELECT * FROM EMP;
+
+SELECT
+    e.ename,
+    d.dname,
+    e.job,
+    e.sal
+FROM emp e JOIN dept d ON e.deptno=d.deptno
+WHERE 
+    e.deptno = (
+        SELECT 
+            deptno
+        FROM emp
+        WHERE LOWER(ename) = 'turner')
+    AND
+    e.sal > (
+        SELECT
+            AVG(sal)
+        FROM emp
+        WHERE deptno = 10);
+
+--47. Indíquese si las siguientes sentencias son correctas, si no lo son, indique en qué
+--consiste el error:        
+SELECT * FROM EMP
+WHERE MGR = NULL;
+
+SELECT * FROM DEPT
+WHERE DEPTNO = 20 OR WHERE DEPTNO = 30;
+
+SELECT * FROM EMP
+WHERE NOT ENAME LIKE ‘R%’
+AND SAL BETWEEN 3000 AND 5000;
+
+SELECT * FROM EMP
+WHERE SAL < 4000 AND JOB NOT = ’ANALYST’;
+
+SELECT * FROM DEPT
+WHERE LOC = ‘DALLAS’ OR ‘CHICAGO’;    
+    
+    
     
 
 
